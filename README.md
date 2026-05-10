@@ -82,6 +82,8 @@ demand_forecasting_project/
 ├── requirements.txt
 ├── TRAIN_MODELS.bat
 ├── START_API.bat
+├── START_DASHBOARD.bat
+└── README.md
 
 ## Forecasting Workflow
 
