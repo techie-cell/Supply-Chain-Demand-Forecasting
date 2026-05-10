@@ -82,7 +82,8 @@ demand_forecasting_project/
 ├── requirements.txt
 ├── TRAIN_MODELS.bat
 ├── START_API.bat
-# Forecasting Workflow
+
+## Forecasting Workflow
 
 ## Data Collection
 - Sales history
