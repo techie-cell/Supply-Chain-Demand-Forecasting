@@ -1,0 +1,196 @@
+# ============================================================
+# config.yaml
+# Central configuration for AI Supply Chain Demand Forecasting
+# ============================================================
+
+project:
+  name: "AI-Powered Supply Chain Demand Forecasting"
+  version: "1.0.0"
+  description: "Multi-dataset demand forecasting system"
+
+# ── Datasets ────────────────────────────────────────────────
+datasets:
+  M5:
+    name: "M5 Forecasting Competition (Walmart)"
+    sample_file: "data/m5/m5_sample.csv"
+    full_file: "data/m5/sales_train_evaluation.csv"
+    date_col: "date"
+    target_col: "sales"
+    sku_col: "item_id"
+    store_col: "store_id"
+    promotion_col: "snap_event"
+    price_col: "sell_price"
+    kaggle_url: "https://www.kaggle.com/competitions/m5-forecasting-accuracy/data"
+    max_skus_cpu: 10
+    max_skus_full: 100
+
+  Favorita:
+    name: "Corporación Favorita Grocery Sales"
+    sample_file: "data/favorita/favorita_sample.csv"
+    full_file: "data/favorita/train.csv"
+    date_col: "date"
+    target_col: "unit_sales"
+    sku_col: "item_nbr"
+    store_col: "store_nbr"
+    promotion_col: "onpromotion"
+    price_col: "transactions"
+    kaggle_url: "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting/data"
+    max_skus_cpu: 10
+    max_skus_full: 50
+
+  UCI:
+    name: "UCI Online Retail / Time Series Dataset"
+    sample_file: "data/uci/uci_sample.csv"
+    full_file: "data/uci/Online Retail.csv"
+    date_col: "date"
+    target_col: "quantity"
+    sku_col: "sku_id"
+    store_col: null
+    promotion_col: null
+    price_col: "unit_price"
+    source_url: "https://archive.ics.uci.edu/ml/datasets/Online+Retail"
+    max_skus_cpu: 10
+    max_skus_full: 100
+
+# ── Preprocessing ────────────────────────────────────────────
+preprocessing:
+  min_history_days: 60
+  test_size_days: 28
+  max_skus_default: 10
+  outlier_percentile: 99
+  resample_freq: "D"
+
+# ── Feature Engineering ──────────────────────────────────────
+features:
+  lags: [1, 7, 14, 21, 28]
+  rolling_windows: [7, 14, 28]
+  fourier_terms: true
+  log_transform: false
+  exog_cols:
+    - promo
+    - is_holiday
+    - web_trend
+    - macro_cpi
+    - competitor_price
+    - inventory_level
+
+# ── Models ───────────────────────────────────────────────────
+models:
+
+  arima:
+    enabled: true
+    seasonal: true
+    m: 7
+    max_p: 3
+    max_q: 3
+    max_P: 1
+    max_Q: 1
+    information_criterion: "aic"
+    horizon: 28
+
+  xgboost:
+    enabled: true
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    reg_alpha: 0.1
+    early_stopping_rounds: 20
+    horizon: 14
+
+  lstm:
+    enabled: true
+    hidden_size: 64
+    num_layers: 2
+    dropout: 0.2
+    seq_len: 30
+    horizon: 14
+    epochs: 20
+    batch_size: 32
+    lr: 0.001
+    # CPU constraint: limit training data
+    max_skus_cpu: 3
+    max_samples_per_sku: 1000
+
+  tft:
+    enabled: true
+    hidden_size: 32          # small for CPU
+    attention_head_size: 2
+    dropout: 0.1
+    hidden_continuous_size: 16
+    output_size: 7           # quantiles
+    max_encoder_length: 30
+    max_prediction_length: 14
+    epochs: 10
+    batch_size: 16
+    lr: 0.03
+    # CPU constraint
+    max_skus_cpu: 2
+
+# ── Evaluation ───────────────────────────────────────────────
+evaluation:
+  primary_metric: "WMAPE"
+  target_improvement_pct: 15    # vs baseline
+  metrics:
+    - MAE
+    - RMSE
+    - WMAPE
+    - MAPE
+    - SMAPE
+  pi_alpha: 0.05   # 95% prediction interval
+
+# ── MLOps ────────────────────────────────────────────────────
+mlops:
+  drift_detection:
+    psi_threshold: 0.2
+    ks_threshold: 0.05
+    mean_change_threshold: 0.30
+  retraining:
+    auto_retrain_on_drift: true
+    max_model_age_hours: 168    # 1 week
+    default_models: ["arima", "xgboost"]
+  logging:
+    level: "INFO"
+    log_dir: "logs"
+    retrain_log: "logs/retrain.log"
+
+# ── API ───────────────────────────────────────────────────────
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+  max_horizon: 30
+  min_horizon: 1
+  cors_origins: ["*"]
+
+# ── Dashboard ────────────────────────────────────────────────
+dashboard:
+  title: "📊 AI-Powered Supply Chain Demand Forecasting"
+  port: 8501
+  api_url: "http://localhost:8000"
+  api_timeout_secs: 10
+  default_horizon: 14
+  default_dataset: "M5"
+  max_skus_display: 50
+
+# ── SOTA ─────────────────────────────────────────────────────
+sota:
+  anomaly_detection:
+    contamination: 0.05
+    zscore_threshold: 3.0
+    iqr_multiplier: 3.0
+    zero_run_threshold: 3
+  gnn:
+    model_type: "gcn"    # gcn | gat
+    correlation_threshold: 0.5
+    hidden_size: 64
+    epochs: 20
+  llm:
+    backend: "template"  # template | openai | local
+    sentiment_model: "distilbert-base-uncased-finetuned-sst-2-english"
+  multitask_tft:
+    sales_loss_weight: 0.7
+    inventory_loss_weight: 0.3
+    max_epochs: 10

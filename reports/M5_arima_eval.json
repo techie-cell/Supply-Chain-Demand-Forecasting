@@ -1,0 +1,9 @@
+{
+  "dataset": "M5",
+  "model": "ARIMA",
+  "n_skus": 3,
+  "avg_WMAPE": 9.4059,
+  "baseline_WMAPE": 11.6794,
+  "improvement_pct": 19.47,
+  "target_met": true
+}

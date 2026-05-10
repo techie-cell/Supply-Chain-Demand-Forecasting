@@ -1,0 +1,48 @@
+# ============================================================
+# AI Supply Chain Demand Forecasting — Windows Requirements
+# Install: pip install -r requirements_windows.txt
+# ============================================================
+
+# Core
+numpy
+pandas
+pyarrow
+scikit-learn
+scipy
+
+# Visualization
+plotly
+matplotlib
+seaborn
+
+# Time series
+statsmodels
+pmdarima
+
+# ML
+xgboost
+lightgbm
+
+# Deep learning (CPU)
+torch
+
+# API
+fastapi
+uvicorn[standard]
+pydantic
+
+# Dashboard
+streamlit
+
+# MLOps
+joblib
+PyYAML
+python-dotenv
+requests
+tqdm
+loguru
+holidays
+httpx
+
+# Kaggle download
+kaggle

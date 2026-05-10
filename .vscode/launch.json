@@ -1,0 +1,77 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI Server",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["api.app:app", "--reload", "--port", "8000"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Streamlit Dashboard",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "args": ["run", "dashboard/app_streamlit.py", "--server.port", "8501"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Train ARIMA (M5)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/train_arima.py",
+      "args": ["--dataset", "M5", "--max_skus", "5"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" }
+    },
+    {
+      "name": "Train XGBoost (M5)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/train_xgboost.py",
+      "args": ["--dataset", "M5", "--max_skus", "10"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" }
+    },
+    {
+      "name": "Train LSTM (M5)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/train_lstm.py",
+      "args": ["--dataset", "M5", "--max_skus", "3", "--epochs", "10"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" }
+    },
+    {
+      "name": "MLOps Retrain Pipeline",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/retrain.py",
+      "args": ["--dataset", "M5", "--models", "arima", "xgboost"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" }
+    },
+    {
+      "name": "Setup Project",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/create_project.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
